@@ -1,0 +1,41 @@
+const merge = require('webpack-merge');
+
+// Plugins
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+// uglify and minify our .js file
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
+const Visualizer = require('webpack-visualizer-plugin');
+
+const baseConfig = require('./webpack.base.config');
+
+const prodConfiguration = env => {
+  return merge([
+    {
+      optimization: {
+        // *Comment take all the common code from entire app and make a common file called vendor.bundle.js
+        // runtimeChunk: 'single',
+        // splitChunks: {
+        //   cacheGroups: {
+        //     vendor: {
+        //       test: /[\\/]node_modules[\\/]/,
+        //       name: 'vendors',
+        //       chunks: 'all'
+        //     }
+        //   }
+        // },
+        minimizer: [new UglifyJsPlugin()],
+      },
+      plugins: [
+        new MiniCssExtractPlugin(),
+        new OptimizeCssAssetsPlugin(),
+        new Visualizer({ filename: './statistics.html' })
+      ],
+    },
+  ]);
+}
+
+module.exports = env => {
+  return merge(baseConfig(env), prodConfiguration(env));
+}
